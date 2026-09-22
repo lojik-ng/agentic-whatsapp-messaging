@@ -172,6 +172,10 @@ npm run serve
 # Server listening on http://127.0.0.1:3333
 ```
 
+ > [!WARNING]
+ > **One active socket per device.** WhatsApp allows only a single live connection per device session. While the `serve` daemon (or a `connect` receiver) is running, one-shot CLI commands that open their own socket (`send`, `chats`, `search`, …) will fail with `Connection Closed` / `Precondition Required`.
+ > Pick **one** socket owner: either run the `serve` daemon and route sends/queries through its HTTP endpoints (e.g. `POST /messages/send`), **or** use one-shot CLI commands with no persistent daemon running.
+
 ### Endpoints
 
 | Method | Route | Description |
