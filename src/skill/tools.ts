@@ -1,0 +1,385 @@
+/**
+ * Standard AI Tool Definitions for WhatsApp Skill
+ * Compatible with OpenAI, Anthropic, Gemini, and Agent tool systems
+ */
+
+export const whatsappToolDefinitions = [
+  {
+    name: 'connectWhatsApp',
+    description: 'Connect to WhatsApp using a phone number and request an 8-character pairing code. Returns the code to enter in WhatsApp on the phone (Settings > Linked Devices > Link a Device > Link with phone number instead).',
+    parameters: {
+      type: 'object',
+      properties: {
+        phoneNumber: {
+          type: 'string',
+          description: 'The WhatsApp phone number including country code with no punctuation (e.g., "15551234567" or "+1 555 123 4567").',
+        },
+      },
+      required: ['phoneNumber'],
+    },
+  },
+  {
+    name: 'getConnectionStatus',
+    description: 'Check current WhatsApp connection status, active linked phone number, pairing state, or last error.',
+    parameters: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'getPairingCode',
+    description: 'Get the active WhatsApp pairing code and step-by-step pairing instructions if waiting for pairing.',
+    parameters: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'disconnectWhatsApp',
+    description: 'Disconnect the active WhatsApp connection.',
+    parameters: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'getChats',
+    description: 'List recent conversations / chats with unread counts and latest messages.',
+    parameters: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'integer',
+          description: 'Maximum number of chats to return (default: 50).',
+        },
+        offset: {
+          type: 'integer',
+          description: 'Offset for pagination (default: 0).',
+        },
+        isGroup: {
+          type: 'boolean',
+          description: 'Filter for groups (true) or private 1:1 chats (false).',
+        },
+      },
+    },
+  },
+  {
+    name: 'searchChats',
+    description: 'Search chats by contact or group name.',
+    parameters: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Search keyword for chat name or JID.',
+        },
+      },
+      required: ['query'],
+    },
+  },
+  {
+    name: 'getContacts',
+    description: 'List known WhatsApp contacts.',
+    parameters: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'integer',
+          description: 'Maximum contacts to return (default: 50).',
+        },
+        offset: {
+          type: 'integer',
+          description: 'Offset for pagination (default: 0).',
+        },
+      },
+    },
+  },
+  {
+    name: 'searchContacts',
+    description: 'Search contacts by name, notify name, or phone number.',
+    parameters: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Search keyword for contact name or phone number.',
+        },
+      },
+      required: ['query'],
+    },
+  },
+  {
+    name: 'readMessages',
+    description: 'Read recent messages from a specific WhatsApp chat.',
+    parameters: {
+      type: 'object',
+      properties: {
+        chatId: {
+          type: 'string',
+          description: 'The chat JID (e.g., "15551234567@s.whatsapp.net" or "1234567890@g.us").',
+        },
+        limit: {
+          type: 'integer',
+          description: 'Maximum number of messages to fetch (default: 20).',
+        },
+        before: {
+          type: 'string',
+          description: 'ISO date string or timestamp to fetch messages before.',
+        },
+      },
+      required: ['chatId'],
+    },
+  },
+  {
+    name: 'searchMessages',
+    description: 'Powerful multi-filter message search using local SQLite index and FTS5 full-text search. Supports keyword, sender, recipient, chat, group, date range, message type, attachments, and read status.',
+    parameters: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Text keyword or search terms across message text, captions, and filenames.',
+        },
+        exactPhrase: {
+          type: 'string',
+          description: 'Exact phrase to match in message text.',
+        },
+        sender: {
+          type: 'string',
+          description: 'Filter by sender JID or partial phone number.',
+        },
+        senderName: {
+          type: 'string',
+          description: 'Filter by sender contact/push name (e.g. "John").',
+        },
+        phoneNumber: {
+          type: 'string',
+          description: 'Filter by phone number.',
+        },
+        chat: {
+          type: 'string',
+          description: 'Filter by chat JID or chat name (e.g. "ABC School" or group name).',
+        },
+        isGroup: {
+          type: 'boolean',
+          description: 'Filter for group messages (true) or private messages (false).',
+        },
+        since: {
+          type: 'string',
+          description: 'Start date / timestamp (e.g. "2026-09-01", "yesterday", "today", "this month").',
+        },
+        until: {
+          type: 'string',
+          description: 'End date / timestamp (e.g. "2026-09-15", "today").',
+        },
+        messageType: {
+          type: 'string',
+          enum: ['text', 'image', 'video', 'audio', 'voice', 'document', 'sticker', 'contact', 'location', 'other'],
+          description: 'Filter by message type.',
+        },
+        hasAttachment: {
+          type: 'boolean',
+          description: 'Filter messages with attachments (true) or without (false).',
+        },
+        attachmentType: {
+          type: 'string',
+          enum: ['image', 'video', 'audio', 'voice', 'document', 'sticker'],
+          description: 'Filter by attachment media type.',
+        },
+        isRead: {
+          type: 'boolean',
+          description: 'Filter by read (true) or unread (false) status.',
+        },
+        messageId: {
+          type: 'string',
+          description: 'Specific message ID to look up.',
+        },
+        limit: {
+          type: 'integer',
+          description: 'Number of results to return (default: 20, max: 200).',
+        },
+        offset: {
+          type: 'integer',
+          description: 'Pagination offset (default: 0).',
+        },
+        sort: {
+          type: 'string',
+          enum: ['desc', 'asc'],
+          description: 'Sort direction by timestamp: "desc" (newest first) or "asc" (oldest first).',
+        },
+      },
+    },
+  },
+  {
+    name: 'getMessage',
+    description: 'Get full details of a specific message by its message ID, including sender, chat, text, and attachment metadata.',
+    parameters: {
+      type: 'object',
+      properties: {
+        messageId: {
+          type: 'string',
+          description: 'The WhatsApp message ID.',
+        },
+      },
+      required: ['messageId'],
+    },
+  },
+  {
+    name: 'sendMessage',
+    description: 'Send a WhatsApp text message to a contact or group.',
+    parameters: {
+      type: 'object',
+      properties: {
+        to: {
+          type: 'string',
+          description: 'Recipient phone number (e.g. "+15551234567") or group JID ("12345@g.us").',
+        },
+        text: {
+          type: 'string',
+          description: 'The text message body to send.',
+        },
+        quotedMessageId: {
+          type: 'string',
+          description: 'Optional message ID to quote / reply to.',
+        },
+      },
+      required: ['to', 'text'],
+    },
+  },
+  {
+    name: 'replyToMessage',
+    description: 'Reply directly to a specific WhatsApp message by its message ID.',
+    parameters: {
+      type: 'object',
+      properties: {
+        messageId: {
+          type: 'string',
+          description: 'The message ID being replied to.',
+        },
+        text: {
+          type: 'string',
+          description: 'The reply message text.',
+        },
+      },
+      required: ['messageId', 'text'],
+    },
+  },
+  {
+    name: 'downloadAttachment',
+    description: 'Download and decrypt a media attachment from a message (image, video, document, voice note, PDF, etc.). Returns the local file path.',
+    parameters: {
+      type: 'object',
+      properties: {
+        messageId: {
+          type: 'string',
+          description: 'The ID of the message containing the attachment to download.',
+        },
+      },
+      required: ['messageId'],
+    },
+  },
+  {
+    name: 'sendAttachment',
+    description: 'Send a file or media attachment (image, video, audio, voice note, PDF, document) to a recipient or group.',
+    parameters: {
+      type: 'object',
+      properties: {
+        to: {
+          type: 'string',
+          description: 'Recipient phone number (e.g. "+15551234567") or group JID.',
+        },
+        file: {
+          type: 'string',
+          description: 'Local file path to the attachment on disk.',
+        },
+        caption: {
+          type: 'string',
+          description: 'Optional caption text for images, videos, or documents.',
+        },
+        mediaType: {
+          type: 'string',
+          enum: ['image', 'video', 'audio', 'voice', 'document', 'sticker'],
+          description: 'Optional media type. If omitted, it will be automatically inferred from the file extension.',
+        },
+        fileName: {
+          type: 'string',
+          description: 'Custom filename to display to the recipient (especially for documents).',
+        },
+        quotedMessageId: {
+          type: 'string',
+          description: 'Optional message ID to quote with this attachment.',
+        },
+      },
+      required: ['to', 'file'],
+    },
+  },
+  {
+    name: 'replyWithAttachment',
+    description: 'Reply to a specific WhatsApp message with a file or media attachment.',
+    parameters: {
+      type: 'object',
+      properties: {
+        messageId: {
+          type: 'string',
+          description: 'The message ID being replied to.',
+        },
+        file: {
+          type: 'string',
+          description: 'Local file path to the attachment on disk.',
+        },
+        caption: {
+          type: 'string',
+          description: 'Optional caption text.',
+        },
+        mediaType: {
+          type: 'string',
+          enum: ['image', 'video', 'audio', 'voice', 'document', 'sticker'],
+          description: 'Optional media type override.',
+        },
+        fileName: {
+          type: 'string',
+          description: 'Custom filename to display.',
+        },
+      },
+      required: ['messageId', 'file'],
+    },
+  },
+];
+
+/**
+ * Format tools for OpenAI Chat Completions API
+ */
+export function getOpenAITools() {
+  return whatsappToolDefinitions.map((tool) => ({
+    type: 'function',
+    function: {
+      name: tool.name,
+      description: tool.description,
+      parameters: tool.parameters,
+    },
+  }));
+}
+
+/**
+ * Format tools for Anthropic Claude Messages API
+ */
+export function getAnthropicTools() {
+  return whatsappToolDefinitions.map((tool) => ({
+    name: tool.name,
+    description: tool.description,
+    input_schema: tool.parameters,
+  }));
+}
+
+/**
+ * Format tools for Google Gemini Function Declarations API
+ */
+export function getGeminiTools() {
+  return {
+    function_declarations: whatsappToolDefinitions.map((tool) => ({
+      name: tool.name,
+      description: tool.description,
+      parameters: tool.parameters,
+    })),
+  };
+}

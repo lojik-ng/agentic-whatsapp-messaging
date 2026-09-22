@@ -1,0 +1,7 @@
+node_modules/
+dist/
+data/auth/
+data/attachments/
+data/*.db*
+.env
+*.log
