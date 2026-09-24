@@ -1,17 +1,14 @@
 # WhatsApp Messaging Skill for AI Agents
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-green.svg)](https://nodejs.org)
-[![Baileys](https://img.shields.io/badge/Baileys-v7.0.0-blue.svg)](https://github.com/WhiskeySockets/Baileys)
-
 A reusable, production-grade **WhatsApp Web skill for AI Agents** built on top of [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys).
 
 The skill provides **WhatsApp pairing code authentication** (no QR codes required), local high-speed message indexing via **SQLite & FTS5 full-text search**, complete **attachment and media management** (images, videos, audio, voice notes, PDFs, spreadsheets, and documents), and clean interfaces for AI Agents via CLI, REST API, or programmatic tool calls.
+
 ---
 
-> ### 🤖 Paste the following instruction in your AI Agents
->
-> **Install this skill in your global skills folder, request the user's WhatsApp phone number, and connect it: https://github.com/lojik-ng/agentic-whatsapp-messaging**
+** 🤖 Paste the following instruction in your AI Agent** 
+
+`Install this skill in your global skills folder, request the user's WhatsApp phone number, and connect it: https://github.com/lojik-ng/agentic-whatsapp-messaging`
 
 
 ---
@@ -278,3 +275,10 @@ Execute the comprehensive automated test suite:
 npm test
 ```
 The suite verifies pairing code generation, session state transitions, database migrations, FTS5 searching, multi-filter combinations, attachment encryption/decryption, sending and replying.
+
+---
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-green.svg)](https://nodejs.org)
+[![Baileys](https://img.shields.io/badge/Baileys-v7.0.0-blue.svg)](https://github.com/WhiskeySockets/Baileys)
+
