@@ -1,15 +1,16 @@
 {
-  "name": "whatsapp-skill",
+  "name": "whatsapp-messaging-skill",
   "version": "1.0.0",
-  "description": "Reusable WhatsApp Web skill for AI Agents powered by Baileys with pairing code authentication, local SQLite search index, and complete attachment management",
+  "description": "Reusable WhatsApp Messaging skill for AI agents (Baileys): pairing-code auth, SQLite FTS5 message search, send/reply, and media download/upload via CLI and HTTP",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "whatsapp-skill": "./bin/whatsapp-skill.js"
+    "whatsapp-messaging-skill": "./bin/whatsapp-skill.js"
   },
   "scripts": {
     "build": "tsc",
+    "prepare": "npm run build",
     "start": "tsx src/index.ts",
     "serve": "tsx src/api/server.ts",
     "cli": "tsx bin/whatsapp-skill.js",
@@ -23,11 +24,20 @@
     "pairing-code",
     "chat",
     "attachments",
-    "search",
     "sqlite"
   ],
-  "author": "",
+  "files": [
+    "bin",
+    "dist",
+    "SKILL.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "author": "lojik-ng",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@whiskeysockets/baileys": "^7.0.0-rc14",
     "better-sqlite3": "^13.0.3",
