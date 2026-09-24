@@ -9,20 +9,10 @@ A reusable, production-grade **WhatsApp Web skill for AI Agents** built on top o
 The skill provides **WhatsApp pairing code authentication** (no QR codes required), local high-speed message indexing via **SQLite & FTS5 full-text search**, complete **attachment and media management** (images, videos, audio, voice notes, PDFs, spreadsheets, and documents), and clean interfaces for AI Agents via CLI, REST API, or programmatic tool calls.
 ---
 
-> ### 🤖 For AI Agents
+> ### 🤖 Paste the following instruction in your AI Agents
 >
-> **Install this skill in your global skills folder, request the user's WhatsApp phone number, and connect it:**
->
-> ```
-> git clone https://github.com/lojik-ng/agentic-whatsapp-messaging <your global skills folder>/whatsapp-messaging
-> cd <global skills folder>/whatsapp-messaging && npm install && npm run build
-> # Ask the user for their WhatsApp phone number (international format, e.g. +2348012345678), then:
-> node bin/whatsapp-messaging-skill.js serve &
-> curl -s -X POST http://127.0.0.1:3333/connect -H "Content-Type: application/json" -d '{"phoneNumber": "<their phone>"}'
-> # Hand the 8-character pairing code to the user; they enter it in WhatsApp (Linked Devices).
-> # Poll: curl -s http://127.0.0.1:3333/status  →  wait for "Connected".
-> ```
-> Full details: [For AI Agents](#for-ai-agents) · Agent playbook: [`SKILL.md`](./SKILL.md)
+> **Install this skill in your global skills folder, request the user's WhatsApp phone number, and connect it: https://github.com/lojik-ng/agentic-whatsapp-messaging**
+
 
 ---
 
