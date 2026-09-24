@@ -1,4 +1,4 @@
-# WhatsApp Web Skill for AI Agents
+# WhatsApp Messaging Skill for AI Agents
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-green.svg)](https://nodejs.org)
@@ -15,7 +15,7 @@ The skill provides **WhatsApp pairing code authentication** (no QR codes require
 ```mermaid
 flowchart TD
     subgraph Agent["AI Agent Layer"]
-        CLI["CLI Tool (whatsapp-skill)"]
+        CLI["CLI Tool (whatsapp-messaging-skill)"]
         HTTP["REST API Server (:3333)"]
         SDK["Node.js SDK (WhatsAppSkill)"]
         Tools["AI Tools (tools.json)"]
@@ -78,88 +78,110 @@ flowchart TD
    - Natural sending and replying with attachments.
 
 4. **Agent-Friendly Operations & Tools**:
-   - 16 standardized operations exposed as CLI commands, REST HTTP API endpoints, and OpenAI/Gemini/Anthropic tool schemas ([`tools.json`](file:///home/lojik/Documents/GitHub/whatsapp-skill/tools.json)).
+   - 16 standardized operations exposed as CLI commands, REST HTTP API endpoints, and OpenAI/Gemini/Anthropic tool schemas ([`tools.json`](./tools.json)).
 
 ---
 
-## Installation & Setup
+## Installation (for AI Agents)
 
-### Prerequisites
-- Node.js >= 20.0.0
-- npm or pnpm
+An agent should run this in a terminal, top to bottom, in any project directory:
 
-### Setup
 ```bash
-git clone https://github.com/WhiskeySockets/Baileys # or this repository
-cd whatsapp-skill
+# 1. Clone the skill
+git clone https://github.com/lojik-ng/whatsapp-messaging.git
+cd whatsapp-messaging
 
-# Install dependencies
+# 2. Install dependencies (Node.js >= 20 required)
 npm install
 
-# Setup environment configuration
+# 3. Build the CLI
+npm run build
+
+# 4. Configuration (optional — defaults work out of the box)
 cp .env.example .env
 ```
+
+All commands in this README use `node bin/whatsapp-messaging-skill.js <command>` from the cloned directory.
+`SKILL.md` in the repo root is the condensed agent-facing playbook — hand it to the agent alongside this section.
 
 ---
 
 ## Connecting WhatsApp via Pairing Code
 
-1. Request a pairing code:
+Pairing must complete while a socket is open, so the agent drives it through the
+persistent **daemon** — one-shot CLI commands exit after printing the code and
+cannot watch the pairing finish.
+
+1. **Agent** starts the daemon in the background (it also resumes any saved
+   session from `./data/auth` automatically):
    ```bash
-   npx tsx bin/whatsapp-skill.js connect "+15551234567"
+   node bin/whatsapp-messaging-skill.js serve   # listens on http://127.0.0.1:3333
    ```
-2. The terminal will display:
+2. **Agent** requests a pairing code with the owner's international phone number:
+   ```bash
+   curl -s -X POST http://127.0.0.1:3333/connect \
+     -H "Content-Type: application/json" \
+     -d '{"phoneNumber": "+15551234567"}'
+   ```
+   The response contains the 8-character code, e.g. `{"formattedCode": "ABCD-1234", ...}`.
+   (The one-shot `node bin/whatsapp-messaging-skill.js connect "+15551234567"` prints the same
+   code to the terminal — useful for a quick check, but it exits afterwards.)
+3. **Agent** prints the code to the human, who enters it on their phone:
    ```text
-   ========================================
-   PAIRING CODE: ABCD-1234
-   ========================================
-   1. Open WhatsApp on your phone.
-   2. Tap Settings (iOS) or Menu (Android) > Linked Devices.
+   WhatsApp on phone:
+   1. Open WhatsApp.
+   2. Tap Settings (iOS) or Menu ⋮ (Android) → Linked Devices.
    3. Tap "Link a Device".
-   4. Select "Link with phone number instead" at the bottom of the screen.
+   4. Select "Link with phone number instead" at the bottom.
    5. Enter the pairing code: ABCD-1234.
    ```
-3. Enter the code in your WhatsApp app. Once entered, the skill detects the connection and transitions to `Connected`.
+4. **Agent** polls until the daemon reports `Connected`:
+   ```bash
+   curl -s http://127.0.0.1:3333/status
+   ```
+   Session credentials are then saved to `./data/auth`; every later restart
+   reconnects automatically with no re-pairing.
 
 ---
 
 ## CLI Usage
 
-The skill provides an executable CLI (`bin/whatsapp-skill.js` or `npm run cli`):
+The skill provides an executable CLI. From the cloned directory run
+`node bin/whatsapp-messaging-skill.js <command>` (or `npx tsx bin/whatsapp-messaging-skill.js <command>` without building):
 
 ```bash
 # Check status
-npx tsx bin/whatsapp-skill.js status
+node bin/whatsapp-messaging-skill.js status
 
 # List recent conversations
-npx tsx bin/whatsapp-skill.js chats --limit 20
+node bin/whatsapp-messaging-skill.js chats --limit 20
 
 # Search conversations
-npx tsx bin/whatsapp-skill.js search-chats "School"
+node bin/whatsapp-messaging-skill.js search-chats "School"
 
 # Search messages with FTS5 keyword
-npx tsx bin/whatsapp-skill.js search --query "invoice"
+node bin/whatsapp-messaging-skill.js search --query "invoice"
 
 # Search messages from specific sender within date range
-npx tsx bin/whatsapp-skill.js search --sender-name "John" --since "2026-09-01" --until "2026-09-15"
+node bin/whatsapp-messaging-skill.js search --sender-name "John" --since "2026-09-01" --until "2026-09-15"
 
 # Show messages with documents received this month
-npx tsx bin/whatsapp-skill.js search --has-attachment --attachment-type "document" --since "this month"
+node bin/whatsapp-messaging-skill.js search --has-attachment --attachment-type "document" --since "this month"
 
 # Send a text message
-npx tsx bin/whatsapp-skill.js send --to "+15551234567" --text "Hello from AI Agent!"
+node bin/whatsapp-messaging-skill.js send --to "+15551234567" --text "Hello from AI Agent!"
 
 # Reply to a message
-npx tsx bin/whatsapp-skill.js reply --message-id "3EB012345" --text "I have processed your request."
+node bin/whatsapp-messaging-skill.js reply --message-id "3EB012345" --text "I have processed your request."
 
 # Send an attachment (PDF, image, etc.)
-npx tsx bin/whatsapp-skill.js send-attachment --to "+15551234567" --file "./docs/agenda.pdf" --caption "Meeting Agenda"
+node bin/whatsapp-messaging-skill.js send-attachment --to "+15551234567" --file "./docs/agenda.pdf" --caption "Meeting Agenda"
 
 # Reply with an attachment
-npx tsx bin/whatsapp-skill.js reply-attachment --message-id "3EB012345" --file "./chart.png" --caption "Here is the chart"
+node bin/whatsapp-messaging-skill.js reply-attachment --message-id "3EB012345" --file "./chart.png" --caption "Here is the chart"
 
 # Download an attachment
-npx tsx bin/whatsapp-skill.js download "3EB012345"
+node bin/whatsapp-messaging-skill.js download "3EB012345"
 ```
 
 ---
@@ -200,8 +222,10 @@ npm run serve
 
 ## Programmatic AI Agent SDK
 
+For agent frameworks that call the skill in-process rather than through the CLI:
+
 ```typescript
-import { WhatsAppSkill } from 'whatsapp-skill';
+import { WhatsAppSkill } from 'whatsapp-messaging-skill';
 
 const skill = new WhatsAppSkill();
 

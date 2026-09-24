@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "name": "whatsapp-skill-tools",
+  "name": "whatsapp-messaging-skill-tools",
   "description": "WhatsApp AI Agent Tools Definition using Baileys and pairing-code auth",
   "tools": [
     {

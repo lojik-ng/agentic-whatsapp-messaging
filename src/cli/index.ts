@@ -152,7 +152,7 @@ export async function runCli(args: string[] = process.argv.slice(2)): Promise<vo
         const text = getArgValue(args, '--text') || args[2];
         const quoted = getArgValue(args, '--quoted');
         if (!to || !text) {
-          console.error('Error: Usage: whatsapp-skill send --to <recipient> --text <message>');
+          console.error('Error: Usage: whatsapp-messaging-skill send --to <recipient> --text <message>');
           process.exit(1);
         }
         const sent = await skill.sendMessage(to, text, { quotedMessageId: quoted });
@@ -165,7 +165,7 @@ export async function runCli(args: string[] = process.argv.slice(2)): Promise<vo
         const messageId = getArgValue(args, '--message-id') || args[1];
         const text = getArgValue(args, '--text') || args[2];
         if (!messageId || !text) {
-          console.error('Error: Usage: whatsapp-skill reply --message-id <id> --text <message>');
+          console.error('Error: Usage: whatsapp-messaging-skill reply --message-id <id> --text <message>');
           process.exit(1);
         }
         const sent = await skill.replyToMessage(messageId, text);
@@ -183,7 +183,7 @@ export async function runCli(args: string[] = process.argv.slice(2)): Promise<vo
         const quoted = getArgValue(args, '--quoted');
 
         if (!to || !file) {
-          console.error('Error: Usage: whatsapp-skill send-attachment --to <recipient> --file <path> [--caption <text>]');
+          console.error('Error: Usage: whatsapp-messaging-skill send-attachment --to <recipient> --file <path> [--caption <text>]');
           process.exit(1);
         }
         const sent = await skill.sendAttachment(to, file, caption, {
@@ -201,7 +201,7 @@ export async function runCli(args: string[] = process.argv.slice(2)): Promise<vo
         const file = getArgValue(args, '--file') || args[2];
         const caption = getArgValue(args, '--caption');
         if (!messageId || !file) {
-          console.error('Error: Usage: whatsapp-skill reply-attachment --message-id <id> --file <path>');
+          console.error('Error: Usage: whatsapp-messaging-skill reply-attachment --message-id <id> --file <path>');
           process.exit(1);
         }
         const sent = await skill.replyWithAttachment(messageId, file, caption);
@@ -267,7 +267,7 @@ function printHelp(): void {
 WhatsApp AI Agent Skill CLI (Baileys)
 
 Usage:
-  whatsapp-skill <command> [options]
+  whatsapp-messaging-skill <command> [options]
 
 Commands:
   status                                          Check connection state & active user

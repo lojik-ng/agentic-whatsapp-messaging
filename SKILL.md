@@ -19,6 +19,36 @@ Key Capabilities:
 - **Agent Interfaces**: Run via CLI commands, REST HTTP API daemon, or programmatic Node.js tools.
 
 ---
+## 0. Install & Connect (agent checklist)
+
+```bash
+# From the git repository:
+git clone https://github.com/lojik-ng/whatsapp-messaging
+cd whatsapp-messaging
+npm install
+npm run build
+# every command below: node bin/whatsapp-messaging-skill.js <command>
+```
+(The global CLI `whatsapp-messaging-skill` is the same thing, installable with `npm i -g whatsapp-messaging-skill` once the package is published.)
+
+**Connect** (the agent does 1, 2 and 4; the human does 3):
+1. Start the daemon in the background — it is the socket owner and auto-resumes saved sessions:
+   ```bash
+   node bin/whatsapp-messaging-skill.js serve
+   ```
+2. Request a pairing code:
+   ```bash
+   curl -X POST http://127.0.0.1:3333/connect \
+     -H "Content-Type: application/json" \
+     -d '{"phoneNumber": "+15551234567"}'
+   ```
+3. Give the human the 8-character code from the response (`formattedCode`).
+   Phone: Settings (iOS) / Menu ⋮ (Android) → Linked Devices → Link a Device → **"Link with phone number instead"** → enter code.
+4. Poll `curl http://127.0.0.1:3333/status` until `"state": "Connected"`.
+
+> **One socket owner.** While the daemon runs, one-shot CLI commands fail with `Connection Closed` — route sends/searches through the HTTP API instead.
+
+---
 
 ## 1. Authentication & Pairing Flow
 
@@ -29,7 +59,7 @@ Key Capabilities:
 
 1. Request a pairing code with your international phone number:
    ```bash
-   whatsapp-skill connect "+15551234567"
+   whatsapp-messaging-skill connect "+15551234567"
    ```
    Or via HTTP:
    ```bash
@@ -56,7 +86,7 @@ Key Capabilities:
 
 Check status at any time:
 ```bash
-whatsapp-skill status
+whatsapp-messaging-skill status
 ```
 
 ---
@@ -66,49 +96,49 @@ whatsapp-skill status
 ### Search Messages
 ```bash
 # Keyword search with FTS5:
-whatsapp-skill search --query "payment receipt"
+whatsapp-messaging-skill search --query "payment receipt"
 
 # Messages from a specific sender within a date range:
-whatsapp-skill search --sender-name "John" --since "2026-09-01" --until "2026-09-15"
+whatsapp-messaging-skill search --sender-name "John" --since "2026-09-01" --until "2026-09-15"
 
 # Show messages with documents or PDFs received this month:
-whatsapp-skill search --has-attachment --attachment-type "document" --since "this month"
+whatsapp-messaging-skill search --has-attachment --attachment-type "document" --since "this month"
 
 # Show unread messages in groups:
-whatsapp-skill search --groups --unread
+whatsapp-messaging-skill search --groups --unread
 ```
 
 ### Send Messages & Replies
 ```bash
 # Send text message:
-whatsapp-skill send --to "+15551234567" --text "Hello! Here is the update."
+whatsapp-messaging-skill send --to "+15551234567" --text "Hello! Here is the update."
 
 # Reply to a message:
-whatsapp-skill reply --message-id "3EB0ABC123" --text "Received, thank you!"
+whatsapp-messaging-skill reply --message-id "3EB0ABC123" --text "Received, thank you!"
 ```
 
 ### Send & Download Attachments
 ```bash
 # Send a PDF document:
-whatsapp-skill send-attachment --to "+15551234567" --file "/path/to/invoice.pdf" --caption "Monthly Invoice"
+whatsapp-messaging-skill send-attachment --to "+15551234567" --file "/path/to/invoice.pdf" --caption "Monthly Invoice"
 
 # Reply to a message with an image:
-whatsapp-skill reply-attachment --message-id "3EB0ABC123" --file "/path/to/chart.png" --caption "Requested chart"
+whatsapp-messaging-skill reply-attachment --message-id "3EB0ABC123" --file "/path/to/chart.png" --caption "Requested chart"
 
 # Download an incoming attachment:
-whatsapp-skill download "3EB0ABC123"
+whatsapp-messaging-skill download "3EB0ABC123"
 ```
 
 ### Chats & Contacts
 ```bash
 # List recent chats:
-whatsapp-skill chats --limit 20
+whatsapp-messaging-skill chats --limit 20
 
 # Search chats by contact or group name:
-whatsapp-skill search-chats "School"
+whatsapp-messaging-skill search-chats "School"
 
 # List contacts:
-whatsapp-skill contacts --limit 50
+whatsapp-messaging-skill contacts --limit 50
 ```
 
 ---
@@ -117,7 +147,7 @@ whatsapp-skill contacts --limit 50
 
 Start the background daemon:
 ```bash
-whatsapp-skill serve --port 3333
+whatsapp-messaging-skill serve --port 3333
 # Or npm run serve
 ```
 
@@ -165,7 +195,7 @@ The skill exposes 16 agent-friendly tools adhering to OpenAI, Gemini, and Anthro
 - `sendAttachment(to, file, caption, mediaType, fileName, quotedMessageId)`
 - `replyWithAttachment(messageId, file, caption, mediaType, fileName)`
 
-Full schema definitions are available in [`tools.json`](file:///home/lojik/Documents/GitHub/whatsapp-skill/tools.json).
+Full schema definitions are available in [`tools.json`](./tools.json).
 
 ---
 

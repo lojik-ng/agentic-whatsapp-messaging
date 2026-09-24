@@ -6,14 +6,14 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "whatsapp-messaging-skill": "./bin/whatsapp-skill.js"
+    "whatsapp-messaging-skill": "./bin/whatsapp-messaging-skill.js"
   },
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
     "start": "tsx src/index.ts",
     "serve": "tsx src/api/server.ts",
-    "cli": "tsx bin/whatsapp-skill.js",
+    "cli": "tsx bin/whatsapp-messaging-skill.js",
     "test": "tsx --test tests/**/*.test.ts"
   },
   "keywords": [
@@ -31,7 +31,8 @@
     "dist",
     "SKILL.md",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "tools.json"
   ],
   "author": "lojik-ng",
   "license": "MIT",
