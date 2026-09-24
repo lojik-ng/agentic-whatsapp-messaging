@@ -7,6 +7,22 @@
 A reusable, production-grade **WhatsApp Web skill for AI Agents** built on top of [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys).
 
 The skill provides **WhatsApp pairing code authentication** (no QR codes required), local high-speed message indexing via **SQLite & FTS5 full-text search**, complete **attachment and media management** (images, videos, audio, voice notes, PDFs, spreadsheets, and documents), and clean interfaces for AI Agents via CLI, REST API, or programmatic tool calls.
+---
+
+> ### 🤖 For AI Agents
+>
+> **Install this skill in your global skills folder, request the user's WhatsApp phone number, and connect it:**
+>
+> ```
+> git clone https://github.com/lojik-ng/agentic-whatsapp-messaging <your global skills folder>/whatsapp-messaging
+> cd <global skills folder>/whatsapp-messaging && npm install && npm run build
+> # Ask the user for their WhatsApp phone number (international format, e.g. +2348012345678), then:
+> node bin/whatsapp-messaging-skill.js serve &
+> curl -s -X POST http://127.0.0.1:3333/connect -H "Content-Type: application/json" -d '{"phoneNumber": "<their phone>"}'
+> # Hand the 8-character pairing code to the user; they enter it in WhatsApp (Linked Devices).
+> # Poll: curl -s http://127.0.0.1:3333/status  →  wait for "Connected".
+> ```
+> Full details: [For AI Agents](#for-ai-agents) · Agent playbook: [`SKILL.md`](./SKILL.md)
 
 ---
 
@@ -82,65 +98,66 @@ flowchart TD
 
 ---
 
-## Installation (for AI Agents)
+## For AI Agents
 
-An agent should run this in a terminal, top to bottom, in any project directory:
+If you are an AI agent that can use this skill, follow these instructions:
+
+**Install this skill in your global skills folder** (e.g. `~/.claude/skills/` or your harness's equivalent), then **request the user's WhatsApp phone number** (international format, e.g. `+2348012345678`) and connect it:
 
 ```bash
-# 1. Clone the skill
-git clone https://github.com/lojik-ng/agentic-whatsapp-messaging.git
-cd agentic-whatsapp-messaging
-
-# 2. Install dependencies (Node.js >= 20 required)
+# 1. Install into your global skills folder
+SKILL_DIR="$HOME/.claude/skills/whatsapp-messaging"   # or your harness's global skills path
+git clone https://github.com/lojik-ng/agentic-whatsapp-messaging "$SKILL_DIR"
+cd "$SKILL_DIR"
 npm install
-
-# 3. Build the CLI
 npm run build
 
-# 4. Configuration (optional — defaults work out of the box)
-cp .env.example .env
+# 2. Ask the user for their WhatsApp phone number (with country code), e.g. +2348012345678
+
+# 3. Connect — start the daemon, request the pairing code, hand it to the user
+node bin/whatsapp-messaging-skill.js serve &   # background; it auto-resumes saved sessions
+curl -s -X POST http://127.0.0.1:3333/connect \
+  -H "Content-Type: application/json" \
+  -d '{"phoneNumber": "<their phone number>"}'
+# give the 8-character code to the user; they enter it on their phone
+# poll until connected:
+curl -s http://127.0.0.1:3333/status
 ```
 
-All commands in this README use `node bin/whatsapp-messaging-skill.js <command>` from the cloned directory.
-`SKILL.md` in the repo root is the condensed agent-facing playbook — hand it to the agent alongside this section.
+Then use the CLI commands (`node "$SKILL_DIR/bin/whatsapp-messaging-skill.js <command>`) or the REST endpoints below to chat, search, and send/receive media.
 
 ---
 
 ## Connecting WhatsApp via Pairing Code
 
-Pairing must complete while a socket is open, so the agent drives it through the
-persistent **daemon** — one-shot CLI commands exit after printing the code and
-cannot watch the pairing finish.
+The agent drives pairing through the persistent **daemon** — one-shot CLI commands
+exit after printing the code and can't watch the pairing finish. Only step 3 needs a human.
 
-1. **Agent** starts the daemon in the background (it also resumes any saved
-   session from `./data/auth` automatically):
+1. **Agent** starts the daemon in the background (it also resumes any saved session
+   from `./data/auth` automatically):
    ```bash
    node bin/whatsapp-messaging-skill.js serve   # listens on http://127.0.0.1:3333
    ```
-2. **Agent** requests a pairing code with the owner's international phone number:
+2. **Agent** requests a pairing code with the user's international phone number and
+   hands the 8-character code to the user:
    ```bash
    curl -s -X POST http://127.0.0.1:3333/connect \
      -H "Content-Type: application/json" \
      -d '{"phoneNumber": "+15551234567"}'
    ```
-   The response contains the 8-character code, e.g. `{"formattedCode": "ABCD-1234", ...}`.
-   (The one-shot `node bin/whatsapp-messaging-skill.js connect "+15551234567"` prints the same
-   code to the terminal — useful for a quick check, but it exits afterwards.)
-3. **Agent** prints the code to the human, who enters it on their phone:
+3. **Human** enters the code on their phone:
    ```text
    WhatsApp on phone:
    1. Open WhatsApp.
-   2. Tap Settings (iOS) or Menu ⋮ (Android) → Linked Devices.
-   3. Tap "Link a Device".
-   4. Select "Link with phone number instead" at the bottom.
-   5. Enter the pairing code: ABCD-1234.
+   2. Settings (iOS) or Menu ⋮ (Android) → Linked Devices.
+   3. "Link a Device" → "Link with phone number instead".
+   4. Enter the pairing code (e.g. ABCD-1234).
    ```
 4. **Agent** polls until the daemon reports `Connected`:
    ```bash
    curl -s http://127.0.0.1:3333/status
    ```
-   Session credentials are then saved to `./data/auth`; every later restart
-   reconnects automatically with no re-pairing.
+   Credentials persist in `./data/auth`; later restarts reconnect automatically, no re-pairing.
 
 ---
 

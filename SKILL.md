@@ -21,30 +21,28 @@ Key Capabilities:
 ---
 ## 0. Install & Connect (agent checklist)
 
+Install this skill in your global skills folder, then request the user's WhatsApp phone number and connect it:
+
 ```bash
-# From the git repository:
-git clone https://github.com/lojik-ng/agentic-whatsapp-messaging
-cd agentic-whatsapp-messaging
+# 1. Install into your global skills folder (e.g. ~/.claude/skills/ or your harness's equivalent)
+SKILL_DIR="$HOME/.claude/skills/whatsapp-messaging"
+git clone https://github.com/lojik-ng/agentic-whatsapp-messaging "$SKILL_DIR"
+cd "$SKILL_DIR"
 npm install
 npm run build
-# every command below: node bin/whatsapp-messaging-skill.js <command>
-```
-(The global CLI `whatsapp-messaging-skill` is the same thing, installable with `npm i -g whatsapp-messaging-skill` once the package is published.)
 
-**Connect** (the agent does 1, 2 and 4; the human does 3):
-1. Start the daemon in the background — it is the socket owner and auto-resumes saved sessions:
-   ```bash
-   node bin/whatsapp-messaging-skill.js serve
-   ```
-2. Request a pairing code:
-   ```bash
-   curl -X POST http://127.0.0.1:3333/connect \
-     -H "Content-Type: application/json" \
-     -d '{"phoneNumber": "+15551234567"}'
-   ```
-3. Give the human the 8-character code from the response (`formattedCode`).
-   Phone: Settings (iOS) / Menu ⋮ (Android) → Linked Devices → Link a Device → **"Link with phone number instead"** → enter code.
-4. Poll `curl http://127.0.0.1:3333/status` until `"state": "Connected"`.
+# 2. Ask the user for their WhatsApp phone number (with country code, e.g. +2348012345678)
+
+# 3. Connect — start the daemon (socket owner; auto-resumes saved sessions),
+#    request the pairing code, hand the 8-character code to the user, then poll /status
+node bin/whatsapp-messaging-skill.js serve &
+curl -s -X POST http://127.0.0.1:3333/connect \
+  -H "Content-Type: application/json" \
+  -d '{"phoneNumber": "<their phone number>"}'
+curl -s http://127.0.0.1:3333/status
+```
+
+(The global CLI `whatsapp-messaging-skill` is the same thing, installable with `npm i -g whatsapp-messaging-skill` once the package is published.)
 
 > **One socket owner.** While the daemon runs, one-shot CLI commands fail with `Connection Closed` — route sends/searches through the HTTP API instead.
 
