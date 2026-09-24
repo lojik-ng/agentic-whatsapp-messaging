@@ -88,7 +88,7 @@ An agent should run this in a terminal, top to bottom, in any project directory:
 
 ```bash
 # 1. Clone the skill
-git clone https://github.com/lojik-ng/whatsapp-messaging.git
+git clone https://github.com/lojik-ng/agentic-whatsapp-messaging.git
 cd whatsapp-messaging
 
 # 2. Install dependencies (Node.js >= 20 required)

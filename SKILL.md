@@ -23,7 +23,7 @@ Key Capabilities:
 
 ```bash
 # From the git repository:
-git clone https://github.com/lojik-ng/whatsapp-messaging
+git clone https://github.com/lojik-ng/agentic-whatsapp-messaging
 cd whatsapp-messaging
 npm install
 npm run build
