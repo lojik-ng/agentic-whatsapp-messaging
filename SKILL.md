@@ -1,13 +1,13 @@
 ---
-name: whatsapp
-description: Reusable WhatsApp Web skill for AI Agents powered by Baileys. Connect via WhatsApp pairing code (no QR codes), search message history via local SQLite FTS5 index, send and reply to messages, and download/send attachments of all types (PDFs, images, audio, voice notes, videos, documents).
+name: whatsapp-messaging
+description: Reusable WhatsApp Messaging skill for AI Agents, search message history, send and reply to messages, and download/send attachments of all types (PDFs, images, audio, voice notes, videos, documents).
 metadata:
   type: tool-integration
   domain: messaging / whatsapp
   transport: cli-and-http
 ---
 
-# WhatsApp Web Skill for AI Agents
+# WhatsApp Messaging Skill for AI Agents
 
 Production-ready WhatsApp Web integration built on `@whiskeysockets/baileys` designed specifically for autonomous AI Agents.
 
