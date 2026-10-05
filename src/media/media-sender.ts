@@ -96,7 +96,7 @@ export class MediaSender {
    */
   normalizeJid(to: string): string {
     const trimmed = to.trim();
-    if (trimmed.endsWith('@s.whatsapp.net') || trimmed.endsWith('@g.us')) {
+    if (trimmed.endsWith('@s.whatsapp.net') || trimmed.endsWith('@g.us') || trimmed.endsWith('@lid')) {
       return trimmed;
     }
     // Remove +, spaces, hyphens, parentheses
