@@ -158,7 +158,7 @@ export class ConnectionManager extends EventEmitter {
       printQRInTerminal: false, // NO QR code authentication
       logger: this.logger as any,
       browser: Browsers.ubuntu('Chrome'),
-      syncFullHistory: false,
+      syncFullHistory: true,
       markOnlineOnConnect: true,
       generateHighQualityLinkPreview: true,
     });
